@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvestPro — เครื่องมือการลงทุนครบวงจร</title>
+  <meta name="description" content="เครื่องมือการลงทุนครบวงจร: พอร์ตลงทุน, ราคาคริปโต, ดอกเบี้ยทบต้น, DCA Simulator, รายรับรายจ่าย">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Mobile Header ===== -->
+  <header class="mobile-header">
+    <button class="hamburger" id="hamburger-btn" aria-label="เปิดเมนู">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="mobile-logo">
+      <i class="fas fa-chart-line"></i>
+      <span>InvestPro</span>
+    </div>
+  </header>
+
+  <!-- ===== Sidebar Overlay (mobile) ===== -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ===== Sidebar Navigation ===== -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <span class="logo-text">InvestPro</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" data-page="portfolio">
+        <i class="fas fa-briefcase"></i>
+        <span>พอร์ตลงทุน</span>
+      </li>
+      <li class="nav-item" data-page="tracker">
+        <i class="fas fa-coins"></i>
+        <span>ราคาคริปโต</span>
+      </li>
+      <li class="nav-item" data-page="compound">
+        <i class="fas fa-calculator"></i>
+        <span>ดอกเบี้ยทบต้น</span>
+      </li>
+      <li class="nav-item" data-page="dca">
+        <i class="fas fa-chart-area"></i>
+        <span>DCA Simulator</span>
+      </li>
+      <li class="nav-item" data-page="budget">
+        <i class="fas fa-wallet"></i>
+        <span>รายรับรายจ่าย</span>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="clock" id="sidebar-clock"></div>
+      <small>© 2026 InvestPro</small>
+    </div>
+  </nav>
+
+  <!-- ===== Main Content ===== -->
+  <main class="main-content">
+
+    <!-- ==================== PAGE 1: PORTFOLIO ==================== -->
+    <section id="page-portfolio" class="page active">
+      <div class="page-header">
+        <div>
+          <h1><i class="fas fa-briefcase"></i> พอร์ตลงทุน</h1>
+          <p class="page-subtitle">จัดการและติดตามสินทรัพย์การลงทุนของคุณ</p>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-cards">
+        <div class="card summary-card glow-purple">
+          <div class="card-icon purple"><i class="fas fa-wallet"></i></div>
+          <div class="card-info">
+            <span class="card-label">มูลค่ารวม</span>
+            <span class="card-value" id="portfolio-total-value">฿0.00</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-green">
+          <div class="card-icon green"><i class="fas fa-chart-line"></i></div>
+          <div class="card-info">
+            <span class="card-label">กำไร/ขาดทุน</span>
+            <span class="card-value" id="portfolio-total-profit">฿0.00</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-blue">
+          <div class="card-icon blue"><i class="fas fa-percent"></i></div>
+          <div class="card-info">
+            <span class="card-label">% เปลี่ยนแปลง</span>
+            <span class="card-value" id="portfolio-total-change">0.00%</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-amber">
+          <div class="card-icon amber"><i class="fas fa-layer-group"></i></div>
+          <div class="card-info">
+            <span class="card-label">จำนวนสินทรัพย์</span>
+            <span class="card-value" id="portfolio-asset-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form + Chart Grid -->
+      <div class="content-grid two-col">
+        <!-- Add Asset Form -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-plus-circle"></i> เพิ่มสินทรัพย์</h3>
+          <form id="portfolio-form">
+            <div class="form-group">
+              <label for="asset-name">ชื่อสินทรัพย์</label>
+              <input type="text" id="asset-name" placeholder="เช่น AAPL, BTC, กองทุน ABC" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="asset-type">ประเภท</label>
+                <select id="asset-type">
+                  <option value="stock">📈 หุ้น</option>
+                  <option value="crypto">🪙 คริปโต</option>
+                  <option value="fund">📊 กองทุน</option>
+                  <option value="gold">🥇 ทองคำ</option>
+                  <option value="bond">📄 พันธบัตร</option>
+                  <option value="other">📦 อื่นๆ</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="asset-quantity">จำนวน</label>
+                <input type="number" id="asset-quantity" placeholder="0" step="any" min="0" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="asset-buy-price">ราคาซื้อ (ต่อหน่วย)</label>
+                <input type="number" id="asset-buy-price" placeholder="0.00" step="any" min="0" required>
+              </div>
+              <div class="form-group">
+                <label for="asset-current-price">ราคาปัจจุบัน (ต่อหน่วย)</label>
+                <input type="number" id="asset-current-price" placeholder="0.00" step="any" min="0" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-plus"></i> เพิ่มสินทรัพย์
+            </button>
+          </form>
+        </div>
+
+        <!-- Portfolio Chart -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-chart-pie"></i> สัดส่วนพอร์ต</h3>
+          <div class="chart-container chart-square">
+            <canvas id="portfolio-chart"></canvas>
+          </div>
+          <div id="portfolio-no-data" class="no-data">
+            <i class="fas fa-inbox"></i>
+            <p>ยังไม่มีข้อมูล — เพิ่มสินทรัพย์เพื่อเริ่มต้น</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Asset Table -->
+      <div class="card">
+        <div class="table-header">
+          <h3 class="card-title"><i class="fas fa-list"></i> รายการสินทรัพย์</h3>
+          <div class="filter-group">
+            <select id="portfolio-filter">
+              <option value="all">🔍 ทั้งหมด</option>
+              <option value="stock">📈 หุ้น</option>
+              <option value="crypto">🪙 คริปโต</option>
+              <option value="fund">📊 กองทุน</option>
+              <option value="gold">🥇 ทองคำ</option>
+              <option value="bond">📄 พันธบัตร</option>
+              <option value="other">📦 อื่นๆ</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>ชื่อ</th>
+                <th>ประเภท</th>
+                <th>จำนวน</th>
+                <th>ราคาซื้อ</th>
+                <th>ราคาปัจจุบัน</th>
+                <th>มูลค่า</th>
+                <th>กำไร/ขาดทุน</th>
+                <th>%</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="portfolio-table"></tbody>
+          </table>
+        </div>
+        <div id="portfolio-table-empty" class="no-data">
+          <i class="fas fa-inbox"></i>
+          <p>ยังไม่มีสินทรัพย์ในพอร์ต</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 2: CRYPTO TRACKER ==================== -->
+    <section id="page-tracker" class="page">
+      <div class="page-header">
+        <div>
+          <h1><i class="fas fa-coins"></i> ราคาคริปโต</h1>
+          <p class="page-subtitle">ติดตามราคาคริปโตเคอร์เรนซี Real-time</p>
+        </div>
+        <div class="page-actions">
+          <span class="badge" id="tracker-last-updated">อัปเดตล่าสุด: —</span>
+          <button class="btn btn-secondary" id="tracker-refresh-btn">
+            <i class="fas fa-sync-alt"></i> รีเฟรช
+          </button>
+        </div>
+      </div>
+
+      <!-- Market Overview Cards -->
+      <div class="summary-cards">
+        <div class="card summary-card glow-amber">
+          <div class="card-icon amber"><i class="fab fa-bitcoin"></i></div>
+          <div class="card-info">
+            <span class="card-label">Bitcoin (BTC)</span>
+            <span class="card-value" id="tracker-btc-price">$—</span>
+            <span class="card-change" id="tracker-btc-change">—</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-blue">
+          <div class="card-icon blue"><i class="fab fa-ethereum"></i></div>
+          <div class="card-info">
+            <span class="card-label">Ethereum (ETH)</span>
+            <span class="card-value" id="tracker-eth-price">$—</span>
+            <span class="card-change" id="tracker-eth-change">—</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-green">
+          <div class="card-icon green"><i class="fas fa-globe"></i></div>
+          <div class="card-info">
+            <span class="card-label">Total Market Cap</span>
+            <span class="card-value" id="tracker-total-mcap">$—</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-purple">
+          <div class="card-icon purple"><i class="fas fa-fire"></i></div>
+          <div class="card-info">
+            <span class="card-label">24h Volume</span>
+            <span class="card-value" id="tracker-total-volume">$—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="card">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="tracker-search" placeholder="ค้นหาเหรียญ... (เช่น Bitcoin, Ethereum, Solana)">
+        </div>
+      </div>
+
+      <!-- Crypto Table -->
+      <div class="card">
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>เหรียญ</th>
+                <th>ราคา (USD)</th>
+                <th>24h %</th>
+                <th>7d %</th>
+                <th>Market Cap</th>
+                <th>Volume 24h</th>
+                <th>กราฟ 7d</th>
+              </tr>
+            </thead>
+            <tbody id="tracker-table"></tbody>
+          </table>
+        </div>
+        <div id="tracker-loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>กำลังโหลดข้อมูล...</p>
+        </div>
+        <div id="tracker-error" class="no-data" style="display:none">
+          <i class="fas fa-exclamation-triangle"></i>
+          <p>ไม่สามารถโหลดข้อมูลได้ — กรุณาลองอีกครั้ง</p>
+          <button class="btn btn-secondary" onclick="CryptoTracker.fetchData()">
+            <i class="fas fa-redo"></i> ลองอีกครั้ง
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 3: COMPOUND INTEREST ==================== -->
+    <section id="page-compound" class="page">
+      <div class="page-header">
+        <div>
+          <h1><i class="fas fa-calculator"></i> เครื่องคำนวณดอกเบี้ยทบต้น</h1>
+          <p class="page-subtitle">วางแผนการเติบโตของเงินลงทุนในอนาคต</p>
+        </div>
+      </div>
+
+      <div class="content-grid two-col">
+        <!-- Calculator Form -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-sliders-h"></i> ตั้งค่าการคำนวณ</h3>
+          <form id="compound-form">
+            <div class="form-group">
+              <label for="compound-principal">เงินต้น (บาท)</label>
+              <input type="number" id="compound-principal" value="100000" step="1000" min="0" required>
+            </div>
+            <div class="form-group">
+              <label for="compound-monthly">ลงทุนเพิ่มรายเดือน (บาท)</label>
+              <input type="number" id="compound-monthly" value="5000" step="500" min="0">
+            </div>
+            <div class="form-group">
+              <label for="compound-rate">อัตราผลตอบแทนต่อปี (%)</label>
+              <input type="number" id="compound-rate" value="8" step="0.5" min="0" max="100" required>
+              <input type="range" id="compound-rate-slider" min="0" max="30" step="0.5" value="8" class="slider">
+            </div>
+            <div class="form-group">
+              <label for="compound-years">ระยะเวลา (ปี)</label>
+              <input type="number" id="compound-years" value="20" step="1" min="1" max="50" required>
+              <input type="range" id="compound-years-slider" min="1" max="50" step="1" value="20" class="slider">
+            </div>
+            <div class="form-group">
+              <label for="compound-frequency">ทบต้นทุก</label>
+              <select id="compound-frequency">
+                <option value="12">รายเดือน</option>
+                <option value="4">รายไตรมาส</option>
+                <option value="2">ราย 6 เดือน</option>
+                <option value="1">รายปี</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-calculator"></i> คำนวณ
+            </button>
+          </form>
+        </div>
+
+        <!-- Results Summary -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-trophy"></i> ผลลัพธ์</h3>
+          <div class="result-cards">
+            <div class="result-item glow-purple">
+              <span class="result-label">มูลค่ารวมปลายทาง</span>
+              <span class="result-value" id="compound-result-total">฿0</span>
+            </div>
+            <div class="result-item glow-green">
+              <span class="result-label">ดอกเบี้ยที่ได้รับ</span>
+              <span class="result-value" id="compound-result-interest">฿0</span>
+            </div>
+            <div class="result-item glow-blue">
+              <span class="result-label">เงินที่ลงทุนทั้งหมด</span>
+              <span class="result-value" id="compound-result-invested">฿0</span>
+            </div>
+            <div class="result-item glow-amber">
+              <span class="result-label">ผลตอบแทนรวม</span>
+              <span class="result-value" id="compound-result-return">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-chart-area"></i> กราฟการเติบโต</h3>
+        <div class="chart-container chart-wide">
+          <canvas id="compound-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Comparison Section -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-balance-scale"></i> เปรียบเทียบสถานการณ์</h3>
+        <div class="comparison-inputs">
+          <div class="form-row">
+            <div class="form-group">
+              <label>สถานการณ์ที่ 1 (%)</label>
+              <input type="number" id="compare-rate-1" value="5" step="0.5" class="compare-input">
+            </div>
+            <div class="form-group">
+              <label>สถานการณ์ที่ 2 (%)</label>
+              <input type="number" id="compare-rate-2" value="8" step="0.5" class="compare-input">
+            </div>
+            <div class="form-group">
+              <label>สถานการณ์ที่ 3 (%)</label>
+              <input type="number" id="compare-rate-3" value="12" step="0.5" class="compare-input">
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="btn-compare">
+            <i class="fas fa-chart-bar"></i> เปรียบเทียบ
+          </button>
+        </div>
+        <div class="chart-container chart-wide">
+          <canvas id="compound-compare-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Yearly Breakdown Table -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-table"></i> รายละเอียดรายปี</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>ปีที่</th>
+                <th>เงินลงทุนสะสม</th>
+                <th>ดอกเบี้ยสะสม</th>
+                <th>มูลค่ารวม</th>
+                <th>ดอกเบี้ยปีนี้</th>
+              </tr>
+            </thead>
+            <tbody id="compound-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 4: DCA SIMULATOR ==================== -->
+    <section id="page-dca" class="page">
+      <div class="page-header">
+        <div>
+          <h1><i class="fas fa-chart-area"></i> DCA Simulator</h1>
+          <p class="page-subtitle">จำลองการลงทุนแบบถัวเฉลี่ยต้นทุน (Dollar Cost Averaging)</p>
+        </div>
+      </div>
+
+      <div class="content-grid two-col">
+        <!-- DCA Form -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-cog"></i> ตั้งค่า DCA</h3>
+          <form id="dca-form">
+            <div class="form-group">
+              <label for="dca-asset-name">ชื่อสินทรัพย์</label>
+              <input type="text" id="dca-asset-name" value="Bitcoin" placeholder="เช่น Bitcoin, SET50">
+            </div>
+            <div class="form-group">
+              <label for="dca-monthly-amount">เงินลงทุนต่อเดือน (บาท)</label>
+              <input type="number" id="dca-monthly-amount" value="5000" step="500" min="100" required>
+            </div>
+            <div class="form-group">
+              <label for="dca-months">ระยะเวลา (เดือน)</label>
+              <input type="number" id="dca-months" value="24" step="1" min="2" max="120" required>
+              <input type="range" id="dca-months-slider" min="2" max="120" step="1" value="24" class="slider">
+            </div>
+            <div class="form-group">
+              <label for="dca-start-price">ราคาเริ่มต้น (บาท)</label>
+              <input type="number" id="dca-start-price" value="1000000" step="1000" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="dca-end-price">ราคาสิ้นสุด (บาท)</label>
+              <input type="number" id="dca-end-price" value="1500000" step="1000" min="1" required>
+            </div>
+            <div class="form-group">
+              <label for="dca-volatility">ความผันผวน (%)</label>
+              <input type="number" id="dca-volatility" value="15" step="1" min="0" max="80">
+              <input type="range" id="dca-volatility-slider" min="0" max="80" step="1" value="15" class="slider">
+            </div>
+            <div class="form-group">
+              <label for="dca-scenario">รูปแบบราคา</label>
+              <select id="dca-scenario">
+                <option value="random">🎲 สุ่ม (Random Walk)</option>
+                <option value="uptrend">📈 ขาขึ้น (Uptrend)</option>
+                <option value="downtrend">📉 ขาลง (Downtrend)</option>
+                <option value="volatile">🌊 ผันผวนสูง (High Volatility)</option>
+                <option value="crash-recover">💥 ร่วง + ฟื้นตัว</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-play"></i> จำลอง DCA
+            </button>
+          </form>
+        </div>
+
+        <!-- DCA Results -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-chart-bar"></i> ผลลัพธ์ DCA</h3>
+          <div class="result-cards">
+            <div class="result-item glow-blue">
+              <span class="result-label">เงินลงทุนทั้งหมด</span>
+              <span class="result-value" id="dca-result-invested">฿0</span>
+            </div>
+            <div class="result-item glow-purple">
+              <span class="result-label">มูลค่าพอร์ต</span>
+              <span class="result-value" id="dca-result-value">฿0</span>
+            </div>
+            <div class="result-item glow-green">
+              <span class="result-label">กำไร/ขาดทุน</span>
+              <span class="result-value" id="dca-result-profit">฿0</span>
+            </div>
+            <div class="result-item glow-amber">
+              <span class="result-label">ต้นทุนเฉลี่ย</span>
+              <span class="result-value" id="dca-result-avg-cost">฿0</span>
+            </div>
+          </div>
+          <div class="result-cards" style="margin-top: 1rem;">
+            <div class="result-item">
+              <span class="result-label">% ผลตอบแทน</span>
+              <span class="result-value" id="dca-result-return">0%</span>
+            </div>
+            <div class="result-item">
+              <span class="result-label">หน่วยสะสม</span>
+              <span class="result-value" id="dca-result-units">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DCA Chart -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-chart-line"></i> กราฟ DCA</h3>
+        <div class="chart-container chart-wide">
+          <canvas id="dca-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Price Chart -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-signal"></i> กราฟราคาสินทรัพย์</h3>
+        <div class="chart-container chart-wide">
+          <canvas id="dca-price-chart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PAGE 5: BUDGET TRACKER ==================== -->
+    <section id="page-budget" class="page">
+      <div class="page-header">
+        <div>
+          <h1><i class="fas fa-wallet"></i> รายรับรายจ่าย</h1>
+          <p class="page-subtitle">ติดตามและจัดการเงินของคุณอย่างมีประสิทธิภาพ</p>
+        </div>
+      </div>
+
+      <!-- Budget Summary Cards -->
+      <div class="summary-cards">
+        <div class="card summary-card glow-green">
+          <div class="card-icon green"><i class="fas fa-arrow-down"></i></div>
+          <div class="card-info">
+            <span class="card-label">รายรับรวม</span>
+            <span class="card-value" id="budget-total-income">฿0.00</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-red">
+          <div class="card-icon red"><i class="fas fa-arrow-up"></i></div>
+          <div class="card-info">
+            <span class="card-label">รายจ่ายรวม</span>
+            <span class="card-value" id="budget-total-expense">฿0.00</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-purple">
+          <div class="card-icon purple"><i class="fas fa-piggy-bank"></i></div>
+          <div class="card-info">
+            <span class="card-label">ยอดคงเหลือ</span>
+            <span class="card-value" id="budget-total-balance">฿0.00</span>
+          </div>
+        </div>
+        <div class="card summary-card glow-blue">
+          <div class="card-icon blue"><i class="fas fa-percentage"></i></div>
+          <div class="card-info">
+            <span class="card-label">อัตราออม</span>
+            <span class="card-value" id="budget-saving-rate">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-grid two-col">
+        <!-- Add Transaction Form -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-plus-circle"></i> เพิ่มรายการ</h3>
+          <form id="budget-form">
+            <div class="form-group">
+              <label>ประเภท</label>
+              <div class="toggle-group">
+                <button type="button" class="toggle-btn active" data-value="income" id="budget-type-income">
+                  <i class="fas fa-arrow-down"></i> รายรับ
+                </button>
+                <button type="button" class="toggle-btn" data-value="expense" id="budget-type-expense">
+                  <i class="fas fa-arrow-up"></i> รายจ่าย
+                </button>
+              </div>
+              <input type="hidden" id="budget-type" value="income">
+            </div>
+            <div class="form-group">
+              <label for="budget-amount">จำนวนเงิน (บาท)</label>
+              <input type="number" id="budget-amount" placeholder="0.00" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+              <label for="budget-category">หมวดหมู่</label>
+              <select id="budget-category">
+                <optgroup label="รายรับ" id="budget-income-categories">
+                  <option value="salary">💼 เงินเดือน</option>
+                  <option value="freelance">💻 ฟรีแลนซ์</option>
+                  <option value="investment-income">📈 ผลตอบแทนการลงทุน</option>
+                  <option value="business">🏪 รายได้ธุรกิจ</option>
+                  <option value="other-income">📦 อื่นๆ</option>
+                </optgroup>
+                <optgroup label="รายจ่าย" id="budget-expense-categories">
+                  <option value="food">🍜 อาหาร</option>
+                  <option value="transport">🚗 เดินทาง</option>
+                  <option value="housing">🏠 ที่อยู่อาศัย</option>
+                  <option value="utilities">💡 ค่าสาธารณูปโภค</option>
+                  <option value="shopping">🛍️ ช้อปปิ้ง</option>
+                  <option value="entertainment">🎬 ความบันเทิง</option>
+                  <option value="health">🏥 สุขภาพ</option>
+                  <option value="education">📚 การศึกษา</option>
+                  <option value="investment-expense">💰 ลงทุน</option>
+                  <option value="other-expense">📦 อื่นๆ</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="budget-date">วันที่</label>
+                <input type="date" id="budget-date" required>
+              </div>
+              <div class="form-group">
+                <label for="budget-note">หมายเหตุ</label>
+                <input type="text" id="budget-note" placeholder="รายละเอียดเพิ่มเติม">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-plus"></i> เพิ่มรายการ
+            </button>
+          </form>
+        </div>
+
+        <!-- Budget Donut Chart -->
+        <div class="card">
+          <h3 class="card-title"><i class="fas fa-chart-pie"></i> สัดส่วนรายจ่าย</h3>
+          <div class="chart-container chart-square">
+            <canvas id="budget-chart-donut"></canvas>
+          </div>
+          <div id="budget-no-data-donut" class="no-data">
+            <i class="fas fa-inbox"></i>
+            <p>ยังไม่มีข้อมูลรายจ่าย</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Bar Chart -->
+      <div class="card">
+        <h3 class="card-title"><i class="fas fa-chart-bar"></i> รายรับ vs รายจ่ายรายเดือน</h3>
+        <div class="chart-container chart-wide">
+          <canvas id="budget-chart-bar"></canvas>
+        </div>
+      </div>
+
+      <!-- Transaction Table -->
+      <div class="card">
+        <div class="table-header">
+          <h3 class="card-title"><i class="fas fa-receipt"></i> รายการทั้งหมด</h3>
+          <div class="filter-group">
+            <select id="budget-filter-month">
+              <option value="all">ทุกเดือน</option>
+              <option value="0">ม.ค.</option>
+              <option value="1">ก.พ.</option>
+              <option value="2">มี.ค.</option>
+              <option value="3">เม.ย.</option>
+              <option value="4">พ.ค.</option>
+              <option value="5">มิ.ย.</option>
+              <option value="6">ก.ค.</option>
+              <option value="7">ส.ค.</option>
+              <option value="8">ก.ย.</option>
+              <option value="9">ต.ค.</option>
+              <option value="10">พ.ย.</option>
+              <option value="11">ธ.ค.</option>
+            </select>
+            <select id="budget-filter-year">
+              <option value="all">ทุกปี</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+            <select id="budget-filter-type">
+              <option value="all">ทั้งหมด</option>
+              <option value="income">รายรับ</option>
+              <option value="expense">รายจ่าย</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>วันที่</th>
+                <th>ประเภท</th>
+                <th>หมวดหมู่</th>
+                <th>หมายเหตุ</th>
+                <th>จำนวนเงิน</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="budget-table"></tbody>
+          </table>
+        </div>
+        <div id="budget-table-empty" class="no-data">
+          <i class="fas fa-inbox"></i>
+          <p>ยังไม่มีรายการ</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script src="js/portfolio.js"></script>
+  <script src="js/tracker.js"></script>
+  <script src="js/compound.js"></script>
+  <script src="js/dca.js"></script>
+  <script src="js/budget.js"></script>
+</body>
+</html>
